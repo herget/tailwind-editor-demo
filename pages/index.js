@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react'
 import Link from '@/components/Link'
 import { PageSEO } from '@/components/SEO'
 import Tag from '@/components/Tag'
@@ -6,19 +7,46 @@ import { getAllFilesFrontMatter } from '@/lib/mdx'
 import formatDate from '@/lib/utils/formatDate'
 
 import NewsletterForm from '@/components/NewsletterForm'
+import { useRouter } from 'next/router'
 
 const MAX_DISPLAY = 5
+
+async function fetchTemplateHtml () {
+  const res = await fetch('https://tailwind-editor.vercel.app/api/template/FEUbVpfnBv97am7UH0qN')
+  const text = await res.text()
+  return text
+}
 
 export async function getStaticProps() {
   const posts = await getAllFilesFrontMatter('blog')
 
-  return { props: { posts } }
+  const templateHtml = await fetchTemplateHtml()
+
+  return { props: { posts, templateHtml } }
 }
 
-export default function Home({ posts }) {
+export default function Home({ posts, templateHtml }) {
+  const [template, setTemplate] = useState(templateHtml)
+  const router = useRouter()
+  const { query } = router
+
+  useEffect(() => {
+    if (!query.previewTemplate) return
+
+    async function fetchTemplate() {
+      console.log('fetching')
+      setTemplate(await fetchTemplateHtml())
+    }
+    console.log('preview mode active, fetching is active...')
+    setInterval(fetchTemplate, 1000);
+  }, [query])
+
+
+
   return (
     <>
       <PageSEO title={siteMetadata.title} description={siteMetadata.description} />
+      <div dangerouslySetInnerHTML={{__html: template}}></div>
       <div className="divide-y divide-gray-200 dark:divide-gray-700">
         <div className="space-y-2 pt-6 pb-8 md:space-y-5">
           <h1 className="text-3xl font-extrabold leading-9 tracking-tight text-gray-900 dark:text-gray-100 sm:text-4xl sm:leading-10 md:text-6xl md:leading-14">
