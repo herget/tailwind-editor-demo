@@ -11,7 +11,7 @@ import { useRouter } from 'next/router'
 
 const MAX_DISPLAY = 5
 
-async function fetchTemplateHtml () {
+async function fetchTemplateHtml() {
   const res = await fetch('https://tailwind-editor.vercel.app/api/template/FEUbVpfnBv97am7UH0qN')
   const text = await res.text()
   return text
@@ -38,15 +38,13 @@ export default function Home({ posts, templateHtml }) {
       setTemplate(await fetchTemplateHtml())
     }
     console.log('preview mode active, fetching is active...')
-    setInterval(fetchTemplate, 1000);
+    setInterval(fetchTemplate, 1000)
   }, [query])
-
-
 
   return (
     <>
       <PageSEO title={siteMetadata.title} description={siteMetadata.description} />
-      <div dangerouslySetInnerHTML={{__html: template}}></div>
+      <div dangerouslySetInnerHTML={{ __html: template }}></div>
       <div className="divide-y divide-gray-200 dark:divide-gray-700">
         <div className="space-y-2 pt-6 pb-8 md:space-y-5">
           <h1 className="text-3xl font-extrabold leading-9 tracking-tight text-gray-900 dark:text-gray-100 sm:text-4xl sm:leading-10 md:text-6xl md:leading-14">
